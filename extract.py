@@ -38,7 +38,10 @@ def extract_from_vpk(target, output_dir):
 
         decompiled_output = pathlib.Path(output_dir, f"{map}.png")
 
-        subprocess.run(["Decompiler", "-i", image_output, "-o", decompiled_output])
+        subprocess.run(
+            ["Decompiler", "-i", image_output, "-o", decompiled_output],
+            env={"COMPlus_EnableDiagnostics": "0"},
+        )
 
         image_output.unlink()
 
