@@ -40,6 +40,19 @@ The path could be retrieved from Steam if you don't know it.
 $ python extract.py
 ```
 
+### Docker
+
+To run this project via Docker, you can use the
+[prebuilt Docker image](https://github.com/invakid404/cs2-radar-extractor/pkgs/container/cs2-radar-extractor)
+like so:
+
+```shell
+$ docker run \
+    -v "${CS2_PATH}:/cs2:ro" \
+    -v ./output:/data/output \
+    ghcr.io/invakid404/cs2-radar-extractor
+```
+
 ### Nix
 
 Nix users can directly skip to step 3 when using the provided `shell.nix` file.
