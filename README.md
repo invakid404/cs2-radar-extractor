@@ -5,9 +5,8 @@ Requires a local CS2 installation.
 
 Depends on
 [ValveResourceFormat](https://github.com/ValveResourceFormat/ValveResourceFormat)
-to extract the images from the compiled resources and
-[vpk](https://pypi.org/project/vpk/) to programmatically extract files from VPK
-archives.
+to extract the images from the proprietary compiled Valve formats used by the
+game.
 
 ## Quick Start
 
@@ -16,7 +15,7 @@ archives.
 1. Install Python dependencies:
 
 ```shell
-$ pip install vpk
+$ pip install vpk vdf pillow sortedcollections
 ```
 
 2. Install `ValveResourceFormat`:
