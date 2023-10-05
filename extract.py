@@ -3,7 +3,11 @@ import re
 import glob
 import pathlib
 import vpk
+import vdf
+import json
 import subprocess
+from sortedcollections import SortedDict
+from PIL import Image
 
 
 RADAR_IMAGES_PATTERN = re.compile(
@@ -29,6 +33,8 @@ def extract_from_vpk(target, output_dir):
         process_file(filepath, OVERVIEWS_PATTERN, overviews)
 
     maps = set(images.keys()).intersection(overviews.keys())
+
+    metadata = SortedDict()   
     for map in maps:
         image_path = images[map]
         image_input = target[image_path]
@@ -40,16 +46,32 @@ def extract_from_vpk(target, output_dir):
 
         subprocess.run(
             ["Decompiler", "-i", image_output, "-o", decompiled_output],
-            env={"COMPlus_EnableDiagnostics": "0"},
+            env={"PATH": os.getenv("PATH"), "COMPlus_EnableDiagnostics": "0"},
         )
 
         image_output.unlink()
 
+        image = Image.open(decompiled_output)
+        (image_x, image_y) = image.size
+
         overview_path = overviews[map]
         overview_input = target[overview_path]
+        overview_data = overview_input.read().decode("utf-8")
 
-        overview_output = pathlib.Path(output_dir, pathlib.Path(overview_path).name)
-        overview_output.write_bytes(overview_input.read())
+        parsed_overview = vdf.loads(overview_data)[map]
+
+        top_left_x = float(parsed_overview["pos_x"])
+        top_left_y = float(parsed_overview["pos_y"])
+        scale = float(parsed_overview["scale"])
+
+        bottom_left_x = top_left_x + image_x * scale
+        bottom_left_y = top_left_y - image_y * scale
+
+        range = [top_left_x, top_left_y, bottom_left_x, bottom_left_y]
+        metadata[map] = [round(coord) for coord in range]
+
+    metadata_output = pathlib.Path(output_dir, "metadata.json")
+    metadata_output.write_text(json.dumps(metadata))
 
 
 def main():
