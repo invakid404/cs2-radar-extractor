@@ -34,7 +34,7 @@ def extract_from_vpk(target, output_dir):
 
     maps = set(images.keys()).intersection(overviews.keys())
 
-    metadata = SortedDict()   
+    metadata = SortedDict()
     for map in maps:
         image_path = images[map]
         image_input = target[image_path]
